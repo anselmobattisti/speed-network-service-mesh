@@ -1,5 +1,9 @@
 #!/bin/bash
 ./delete.sh
+
+sudo sysctl fs.inotify.max_user_watches=524288
+sudo sysctl fs.inotify.max_user_instances=512
+
 source ../clusters.sh
 
 echo "================="

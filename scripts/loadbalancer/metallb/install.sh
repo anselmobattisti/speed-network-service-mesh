@@ -1,6 +1,16 @@
+#!/bin/bash
+echo "========================="
+echo "CONFIGURING LOAD BALANCER"
+echo "========================="
+
 # Define an array of cluster contexts
-clusters=("kind-cluster1" "kind-cluster2")
-           
+source ../../clusters.sh
+
+# Function to check if the controller pod is ready
+is_controller_ready() {
+    kubectl get pods -n metallb-system -l "component=controller" -o jsonpath='{.items[0].status.containerStatuses[0].ready}' 2>/dev/null
+}
+
 # Obter o Cluster CIDR
 CLUSTER_CIDR=$(docker network inspect kind | jq -r '.[0].IPAM.Config[] | select(.Subnet | test("^[0-9]")) | .Subnet')
 
@@ -11,15 +21,13 @@ IP_PREFIX=$(echo $CLUSTER_CIDR | awk -F'[./]' '{print $1"."$2"."$3}')
 i=100
 
 # Loop through each cluster context
-for cluster in "${clusters[@]}"; do
-    echo "INSTALLING METALLIB FOR $cluster"
+for cluster in "${clusters_context[@]}"; do    
+    kubectl config use-context "$cluster"
+    echo "==================="
     echo "Current K8s Cluster"
+    echo "==================="
     kubectl config current-context
-    kubectl cluster-info --context "$cluster"    
-    sleep 2
-    echo "Current K8s Cluster"
-    kubectl config current-context
-    sleep 20
+
     final_ip=$((i+10))
     IP_RANGE_START="${IP_PREFIX}.${i}"
     IP_RANGE_END="${IP_PREFIX}.${final_ip}"
@@ -30,8 +38,20 @@ for cluster in "${clusters[@]}"; do
     if [[ ! -z $METALLB_IP_RANGE ]]; then
     
     kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
-    # kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
-    # kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+
+    echo "Waiting for the MetalLB controller pod to become Ready..."
+
+    while true; do
+        READY=$(is_controller_ready)
+        if [[ "$READY" == "true" ]]; then
+            echo "The MetalLB controller pod is Ready."
+            break
+        else
+            echo "The MetalLB controller pod is not Ready yet. Retrying in 5 seconds..."
+            sleep 5
+        fi
+    done
+    
     kubectl apply -f - <<EOF
 apiVersion: v1
 kind: ConfigMap
@@ -61,6 +81,13 @@ metadata:
 spec:
   addresses:
     - $METALLB_IP_RANGE 
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  namespace: metallb-system
+  name: my-l2-advertisement
+spec: {}    
 EOF
     kubectl wait --for=condition=ready --timeout=5m pod -l app=metallb -n metallb-system
 
@@ -70,9 +97,7 @@ EOF
     kubectl describe configmap config -n metallb-system
     i=$((i+11))
 fi
-
     
 done
 
 echo "INSTALLATION COMPLETE"
-
