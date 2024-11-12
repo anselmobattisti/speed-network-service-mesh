@@ -45,7 +45,7 @@ get_dns_lb_ip() {
 
   # Allow a short delay before configuring the next cluster
   echo "Sleeping 10s to allow DNS propagation..."
-  sleep 10
+#   sleep 10
 }
 
 # Loop through each cluster to expose DNS and get LoadBalancer IP
@@ -99,6 +99,31 @@ data:
     fi
   done
 
+  config+="
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  server.override: |
+    k8s_external my."$current_cluster""
+
+  # Loop to add inter-cluster DNS forwarding for other clusters
+  for i in "${!clusters[@]}"; do
+    if [[ "${clusters[$i]}" != "$current_cluster" ]]; then
+      proxy_id=$((i+1))
+      config+="  
+  proxy"$proxy_id".server: |    
+    my.${clusters[$i]}:53 {
+      forward . ${clusters_ip[$i]}:53 {
+        force_tcp
+      }
+    }"
+    fi
+  done
+
   echo "$config"
 }
 
@@ -115,6 +140,9 @@ for i in "${!clusters[@]}"; do
 
   # Generate dynamic DNS configuration
   dns_config=$(generate_dns_config "$current_cluster" "$current_ip")
+
+#   printf "%s\n" "$dns_config"
+#   exit
 
   # Apply the generated ConfigMap to the current cluster context
   echo "$dns_config" | kubectl --context "$current_context" apply -f -
