@@ -1,0 +1,40 @@
+# debug.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: debug
+  name: debug
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debug
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: debug
+    spec:
+      containers:
+      - args:
+        - |-
+          apk add curl jq openssl bash bind-tools          
+          apk add coreutils
+          apk add iperf3
+          apk add tcpdump
+          apk add socat
+          apk add vim
+          sleep infinity
+        command:
+        - /bin/sh
+        - -c
+        image: alpine:3.18
+        name: alpine
+        resources:
+          limits:
+            memory: 128Mi
+            cpu: 100m
+status: {}

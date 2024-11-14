@@ -14,8 +14,7 @@ for cluster in "${clusters_context[@]}"; do
     echo "==================="
     kubectl config current-context
 
-    kubectl run -it --rm dns-test --image=busybox:1.28 --restart=Never -- nslookup my.cluster1
-
+    kubectl run -it --rm dns-test --image=busybox:1.28 --restart=Never -- nslookup my.cluster2
 
     # kubectl delete deployment nginx
     # kubectl delete service nginx

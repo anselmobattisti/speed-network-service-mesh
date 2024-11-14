@@ -1,5 +1,7 @@
 # Metallb
 
+Is a loadbalancer for the services. It exposes the services using one IP associated with the kind cluster.
+
 ## Check Instalation
 
 ### IP Address Pool
