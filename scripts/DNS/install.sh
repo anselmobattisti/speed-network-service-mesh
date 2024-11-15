@@ -70,17 +70,6 @@ generate_dns_config() {
   local current_cluster=$1
   local current_ip=$2
 
-  stubDomains=""
-  # Loop to add inter-cluster DNS forwarding for other clusters
-  for i in "${!clusters[@]}"; do
-    if [[ "${clusters[$i]}" != "$current_cluster" ]]; then
-      stubDomains+="stub 
-            ${clusters[$i]}.local [${clusters_ip[$i]}]
-        "
-    fi
-  done
-  stubDomains+="}"
-
   local config="apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -89,18 +78,22 @@ metadata:
 data:
   Corefile: |
     .:53 {
+        chaos
         errors
         log
         health {
             lameduck 5s
         }
         ready
-        kubernetes ${current_cluster}.local in-addr.arpa ip6.arpa {
+
+        kubernetes cluster.local in-addr.arpa ip6.arpa {
             pods insecure
             fallthrough in-addr.arpa ip6.arpa
             ttl 30
         }
-        ${stubDomains}        
+
+        k8s_external my.${current_cluster}
+
         prometheus :9153
         forward . /etc/resolv.conf {
             max_concurrent 1000
@@ -109,44 +102,18 @@ data:
         reload 5s
     }"
 
-
-  # # Loop to add inter-cluster DNS forwarding for other clusters
-  # for i in "${!clusters[@]}"; do
-  #   if [[ "${clusters[$i]}" != "$current_cluster" ]]; then
-  #     config+="
-  #   ${clusters[$i]}.local:53 {
-  #     log
-  #     forward . ${clusters_ip[$i]} {
-  #       force_tcp
-  #     }
-  #   }"
-  #   fi
-  # done
-
-#   config+="
-# ---
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: coredns-custom
-#   namespace: kube-system
-# data:
-#   server.override: |
-#     k8s_external "$current_cluster".local"
-
-#   # Loop to add inter-cluster DNS forwarding for other clusters
-#   for i in "${!clusters[@]}"; do
-#     if [[ "${clusters[$i]}" != "$current_cluster" ]]; then
-#       proxy_id=$((i+1))
-#       config+="  
-#   proxy"$proxy_id".server: |    
-#     ${clusters[$i]}.local:53 {
-#       forward . ${clusters_ip[$i]} {
-#         force_tcp
-#       }
-#     }"
-#     fi
-#   done
+  # Loop to add inter-cluster DNS forwarding for other clusters
+  for i in "${!clusters[@]}"; do
+    if [[ "${clusters[$i]}" != "$current_cluster" ]]; then
+      config+="
+    my.${clusters[$i]}:53 {
+      log
+      forward . ${clusters_ip[$i]}:53 {
+        force_tcp
+      }
+    }"
+    fi
+  done
 
   echo "$config"
 }
@@ -163,8 +130,7 @@ for i in "${!clusters[@]}"; do
   # Generate dynamic DNS configuration
   dns_config=$(generate_dns_config "$current_cluster" "$current_ip")
 
-    printf "%s\n" "$dns_config"
-#   exit
+  printf "%s\n" "$dns_config"
 
   # Apply the generated ConfigMap to the current cluster context
   echo "$dns_config" | kubectl --context "$current_context" apply -f -

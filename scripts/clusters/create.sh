@@ -13,7 +13,7 @@ echo "================="
 # Loop through each cluster context
 for cluster in "${clusters[@]}"; do
     
-    kind create cluster --name  "$cluster" --image=kindest/node:v1.31.1 --config=kind.yaml
+    kind create cluster --name  "$cluster" --image=kindest/node:v1.31.2 --config=kind.yaml
 
     # Check for errors
     if [ $? -ne 0 ]; then
