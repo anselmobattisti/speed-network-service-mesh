@@ -63,3 +63,22 @@ data:
 The logs.sh file receive the cluster id and show the logs from all the coredns pods.
 
 When you execute a request for the DNS one of the pods is selected, thus its necessary to watch the log in both pods.
+
+## Test
+
+After executing the metallb test it is possible to check if the nginx service is accessible outside the cluster where it is executed.
+
+```sh 
+alpine/logar.sh 1
+nslookup nginx.default.my.cluster1
+```
+
+It must show the ip associated with the service metallb.
+
+```sh
+Server:		10.96.0.10
+Address:	10.96.0.10#53
+
+Name:	nginx.default.my.cluster3
+Address: 172.19.0.123
+```

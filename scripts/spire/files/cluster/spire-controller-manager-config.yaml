@@ -9,8 +9,8 @@ leaderElection:
   leaderElect: true
   resourceName: 98c9c988.spiffe.io
   resourceNamespace: spire
-clusterName: nsm.cluster1
-trustDomain: nsm.cluster1
+clusterName: nsm.{cluster_name}
+trustDomain: nsm.{cluster_name}
 spireServerSocketPath: /run/spire/sockets/api.sock
 ignoreNamespaces:
   - kube-system

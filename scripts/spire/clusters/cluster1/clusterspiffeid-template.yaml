@@ -8,4 +8,4 @@ spec:
   podSelector:
     matchLabels:
       "spiffe.io/spiffe-id": "true"
-  federatesWith: [cluster2,cluster3]
+  federatesWith: ["nsm.cluster2", "nsm.cluster3"]
