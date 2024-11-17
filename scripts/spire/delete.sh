@@ -4,12 +4,9 @@ echo "================"
 echo " DELETING SPIRE "
 echo "================"
 
-if [[ ! -f ../clusters.sh ]]; then
-    echo "Error: clusters.sh not found!"
-    exit 1
-fi
+source ../functions.sh
 
-source ../clusters.sh
+cluster_definition_load
 
 # Function to check if a resource exists
 check_and_delete() {

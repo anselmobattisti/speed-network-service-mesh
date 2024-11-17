@@ -6,7 +6,9 @@ echo "==============="
 echo "CONFIGURING DNS"
 echo "==============="
 
-source ../clusters.sh
+source ../functions.sh
+
+cluster_definition_load
 
 # Define arrays for clusters and their kubeconfig contexts
 clusters_ip=()  # This will be populated dynamically
@@ -60,6 +62,7 @@ get_dns_lb_ip() {
 for i in "${!clusters[@]}"; do  
   get_dns_lb_ip "${clusters[$i]}" "${clusters_context[$i]}"
 done
+
 echo "-----"
 echo "All LoadBalancer IPs collected: ${clusters_ip[@]}"
 echo "Configuration can proceed with the following IPs: ${clusters_ip[@]}"

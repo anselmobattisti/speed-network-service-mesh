@@ -6,13 +6,9 @@ echo "==================="
 echo " CONFIGURING SPIRE "
 echo "==================="
 
-if [[ ! -f ../clusters.sh ]]; then
-    echo "Error: clusters.sh not found!"
-    exit 1
-fi
+source ../functions.sh
 
-# load the cluster names
-source ../clusters.sh
+cluster_definition_load
 
 bootstrap_spiffe_federation() {
     # Check if the required arrays are defined

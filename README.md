@@ -31,6 +31,14 @@ Or pass the context in each command.
 kubectl get pods -A --context=kind-cluster3
  ```
 
+### kustomization
+
+The kustomization.yaml is the entry point of the configuration (index.html)
+
+```shell
+kubectl apply -f ./folder_where_the_kustomization.yaml
+```
+
 # Software 
 
 https://networkservicemesh.io/docs/setup/run/
@@ -66,12 +74,3 @@ iperf3 -c 10.244.2.14 -p 8080
 
 URL da instalação 
 https://github.com/networkservicemesh/deployments-k8s/tree/v1.14.0/examples/interdomain/two_cluster_configuration/basic
-
-# Kind 
-
-```sh
-# trocar de contexto o kubectl
-kubectl cluster-info --context kind-cluster1
-
-kubectl cluster-info --context kind-cluster2
-```

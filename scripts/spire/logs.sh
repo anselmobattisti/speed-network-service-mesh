@@ -6,12 +6,9 @@ echo "============"
 echo " LOGS SPIRE "
 echo "============"
 
-if [[ ! -f ../clusters.sh ]]; then
-    echo "Error: clusters.sh not found!"
-    exit 1
-fi
+source ../functions.sh
 
-source ../clusters.sh
+cluster_definition_load
 
 # Show spire logs in all the clusters
 for i in "${!clusters[@]}"; do

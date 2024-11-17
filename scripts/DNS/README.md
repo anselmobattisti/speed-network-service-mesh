@@ -1,6 +1,19 @@
-# CORE DNS
+# Interdomain CoreDNS
 
-Enable that the services executed in one cluster could be accessed by another cluster using a name instead of the IP.
+Allows that services executed in one cluster could be accessed by another cluster using a name instead of the IP.
+
+The domain requested is resolved in execution time.
+
+The configuration is mainly based on plugins.
+
+The loadbalnce will give one ip for the CoreDNS server to be access from the other clusters.
+
+```sh
+kubectl get svc exposed-kube-dns -n kube-system --context=kind-cluster1
+```
+
+It should show the external ip used by the CoreDNS to be access from the other clusters.
+
 
 ## Check if DNS is configured
 
@@ -10,13 +23,22 @@ Verify in each cluster if there an entry pointing to the another server
 kubectl --context=kind-cluster1  describe configmap coredns -n kube-system
 
 kubectl --context=kind-cluster2  describe configmap coredns -n kube-system
+
+kubectl --context=kind-cluster3  describe configmap coredns -n kube-system
 ```
 
-The CoreDNS config file must have the plugin k8s_external it allow that the services executed in the cluster can be executed via another FQN instead of cluster.local.
+The CoreDNS config file must have the plugin k8s_external it allow that the services executed in the cluster can be executed via another FQN instead of cluster.local. 
 
 In our case, it should be possible to execute the service using the my.cluster(n) url, for example: nginx.default.my.cluster2 in the cluster 1 and in the cluster2 to.
 
-For each cluster it should be have a block with the extenal name configured in the cluster. All the request with this name should be forwareded to the DNS in the configured IP.
+```sh
+alpine/login.sh 2
+
+#execute
+curl nginx.default.my.cluster1
+```
+
+For each cluster, in the CoreDNS configuration file, it must have a block with the extenal name configured in the cluster. All the request with this name will be forwareded to the DNS Server in the configured IP.
 
 ```sh
 apiVersion: v1
@@ -41,7 +63,7 @@ data:
             ttl 30
         }
 
-        k8s_external my.cluster2
+        k8s_external my.cluster1
 
         prometheus :9153
         forward . /etc/resolv.conf {
@@ -50,9 +72,15 @@ data:
         loop
         reload 5s
     }
-    my.cluster1:53 {
+    my.cluster2:53 {
       log
-      forward . 172.19.0.101:53 {
+      forward . 172.19.0.112:53 {
+        force_tcp
+      }
+    }
+    my.cluster3:53 {
+      log
+      forward . 172.19.0.123:53 {
         force_tcp
       }
     }

@@ -2,23 +2,13 @@
 
 Is an implementation of SPIFE. It enable te secure comunication between pods. In prticular pods in different clusters.
 
-It is necessary to configure in each cluster the spire.
-
-The kustomization.yaml is the entry point of the configuration (index.html)
-
-```shell
-kubectl apply -f ./folder_where_the_kustomization.yaml
-```
+It is necessary to install and configure in each cluster the spire.
 
 ## Install Script
 
-The installation process create a folder for each cluster where the specific configuration files are created.
+The installation process create a folder for each cluster where the specific configuration files are created. The folder is clusters/cluster(n). Each created file is configured for the specific cluster.
 
-The source files are in files folder.
-
-The files/base folder is the same for all cluster.
-
-Each created file is configured for the specific cluster.
+The source files are hosted inside the "files" folder. The files/base folder is the same for all the clusters.
 
 After creating the files for each cluster and executing apply the yaml files in each cluster, is necessary to create the federation.
 
@@ -54,11 +44,11 @@ kubectl describe svc spire-server -n spire --context=kind-cluster3
 Verify if the bundler where copied to the servers
 
 ```sh 
-kubectl exec spire-server-0 -n spire --context=kind-cluster1 -- bin/spire-server bundle show
+kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster1 -- bin/spire-server bundle show
 
-kubectl exec spire-server-0 -n spire --context=kind-cluster2 -- bin/spire-server bundle show
+kubectl exec spire-server-0 -n spire -c spire-server  --context=kind-cluster2 -- bin/spire-server bundle show
 
-kubectl exec spire-server-0 -n spire --context=kind-cluster3 -- bin/spire-server bundle show
+kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster3 -- bin/spire-server bundle show
 ```
 
 List all the bundles in the spire server

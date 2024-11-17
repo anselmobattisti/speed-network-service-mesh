@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 echo "=============================="
 echo "CREATING ALPINE FROM CLUSTERS"
 echo "=============================="
