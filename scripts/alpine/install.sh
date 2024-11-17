@@ -4,20 +4,20 @@ echo "=============================="
 echo "CREATING ALPINE FROM CLUSTERS"
 echo "=============================="
 
-# Define an array of cluster contexts
-source ../clusters.sh
+source ../functions.sh
 
-POD_NAME="alpine"
+cluster_definition_load
 
-# Loop through each cluster context
-for cluster in "${clusters_context[@]}"; do    
-    kubectl config use-context "$cluster"
-    echo "==================="
-    echo "Current K8s Cluster"
-    echo "==================="
-    kubectl config current-context
+# Apply DNS configuration for each cluster
+for i in "${!clusters[@]}"; do
+  
+    current_cluster="${clusters[$i]}"
+    current_context="${clusters_context[$i]}"
 
-    if ! kubectl  --context "$cluster_context" get pod ${POD_NAME} > /dev/null 2>&1; then        
-        kubectl apply -f alpine.yaml
-    fi
+    echo "--------------------"
+    echo "Current K8s Cluster "
+    echo "--------------------"    
+    echo $current_context
+
+    kubectl --context=$current_context apply -f alpine.yaml    
 done

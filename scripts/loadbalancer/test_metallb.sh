@@ -3,8 +3,9 @@ echo "================================="
 echo "CHECKING LOAD BALANCER WITH NGINX"
 echo "================================="
 
-# Define an array of cluster contexts
-source ../../clusters.sh
+source ../functions.sh
+
+cluster_definition_load
 
 ./delete_test.sh
 
@@ -19,7 +20,7 @@ for cluster in "${clusters_context[@]}"; do
     kubectl create deployment nginx --image=nginx
     kubectl expose deployment nginx --type=LoadBalancer --port=80
 
-    kubectl get svc
+    kubectl get svc nginx
 done
 
 

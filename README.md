@@ -1,5 +1,36 @@
 # Test
 
+## Environment 
+
+The environment is composed of k8s clusters created using kind, the services are exposed via metallb loadbalance and the CodeDNS provide the interdomain name resolve FQN. Important, the url of a service is service_name.namespace.my.cluster(n).
+
+* Create the cluster
+* Install the metallb load balancer
+* Configure the CoreDNS to execute in a interdomain mode
+* Configure the spire authentication
+
+# Miscelanea
+
+## Kubectl hints
+
+To know the context of the kubectl
+
+ ```sh
+ kubectl config current-context
+```
+
+To execute a command inside a specific cluster you can change the cointext
+
+ ```sh
+kubectl config use-context kind-cluster2
+ ```
+
+Or pass the context in each command.
+
+ ```sh
+kubectl get pods -A --context=kind-cluster3
+ ```
+
 # Software 
 
 https://networkservicemesh.io/docs/setup/run/

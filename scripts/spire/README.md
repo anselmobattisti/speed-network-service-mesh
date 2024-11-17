@@ -79,4 +79,8 @@ kubectl exec spire-server-0 -n spire --context=kind-cluster2 -c spire-server -- 
 kubectl exec spire-server-0 -n spire --context=kind-cluster3 -c spire-server -- bin/spire-server bundle list
 ```
 
+Show the trust bundles, if executed in cluster3 it must present the data from cluster1 and cluster2
 
+```sh
+kubectl exec spire-server-0 -n spire -c spire-server -- bin/spire-server bundle list  -format spiffe
+```

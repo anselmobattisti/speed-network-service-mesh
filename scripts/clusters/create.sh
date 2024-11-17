@@ -1,10 +1,13 @@
 #!/bin/bash
+
+source ../functions.sh
+
+cluster_definition_load
+
 ./delete.sh
 
 sudo sysctl fs.inotify.max_user_watches=524288
 sudo sysctl fs.inotify.max_user_instances=512
-
-source ../clusters.sh
 
 echo "================="
 echo "CREATING CLUSTERS"
@@ -28,16 +31,4 @@ for cluster in "${clusters[@]}"; do
     echo "+==============================+"
     echo "| Cluster $cluster is ready :) |"
     echo "+==============================+"
-
-    # # Step 2: Configure CoreDNS with the custom domain
-    # echo "Configuring CoreDNS for $cluster"
-
-    # custom_domain="my.${cluster}"
-
-    # kubectl --context="kind-${cluster}" get configmap coredns -n kube-system -o yaml | sed "s|cluster.local|${custom_domain}|g" | kubectl --context="kind-${cluster}" apply -f -
-
-    # # Restart CoreDNS to apply changes
-    # kubectl --context="kind-${cluster}" rollout restart deployment coredns -n kube-system
-
-    # echo "CoreDNS configured for custom domain: ${custom_domain}"    
 done

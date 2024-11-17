@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source ../clusters.sh
+source ../functions.sh
+
+cluster_definition_load
 
 echo "================="
 echo "DELETING CLUSTERS"

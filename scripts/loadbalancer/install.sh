@@ -3,8 +3,9 @@ echo "========================="
 echo "CONFIGURING LOAD BALANCER"
 echo "========================="
 
-# Define an array of cluster contexts
-source ../../clusters.sh
+source ../functions.sh
+
+cluster_definition_load
 
 # Function to check if the controller pod is ready
 is_controller_ready() {
@@ -17,9 +18,6 @@ CLUSTER_CIDR=$(docker network inspect kind | jq -r '.[0].IPAM.Config[] | select(
 # Extrair o prefixo (ex: 172.19.0) e definir o range de IPs
 IP_PREFIX=$(echo $CLUSTER_CIDR | awk -F'[./]' '{print $1"."$2"."$3}')
 
-# this firt ip in the cluster
-i=100
-
 # Loop through each cluster context
 for cluster in "${clusters_context[@]}"; do    
     kubectl config use-context "$cluster"
@@ -28,8 +26,8 @@ for cluster in "${clusters_context[@]}"; do
     echo "==================="
     kubectl config current-context
 
-    final_ip=$((i+10))
-    IP_RANGE_START="${IP_PREFIX}.${i}"
+    final_ip=$(($first_ip+$ips_in_the_cluster))
+    IP_RANGE_START="${IP_PREFIX}.${first_ip}"
     IP_RANGE_END="${IP_PREFIX}.${final_ip}"
 
     # Construir o range de IPs para o MetalLB
@@ -95,7 +93,7 @@ EOF
     kubectl config current-context
     kubectl cluster-info 
     kubectl describe configmap config -n metallb-system
-    i=$((i+11))
+    first_ip=$(($final_ip+1))    
 fi
     
 done
