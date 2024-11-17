@@ -9,6 +9,16 @@ The environment is composed of k8s clusters created using kind, the services are
 * Configure the CoreDNS to execute in a interdomain mode
 * Configure the spire authentication
 
+## Basic Example 
+
+Three Clusters Interdomain scenario 
+
+https://github.com/networkservicemesh/deployments-k8s/tree/main/examples/interdomain/three_cluster_configuration/basic
+
+The USE Case is the 
+
+https://github.com/networkservicemesh/deployments-k8s/tree/main/examples/interdomain/usecases/floating_nse_composition
+
 # Miscelanea
 
 ## Kubectl hints

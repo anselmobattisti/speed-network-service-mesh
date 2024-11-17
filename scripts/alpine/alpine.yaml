@@ -28,11 +28,9 @@ spec:
           apk add socat
           apk add vim
           sleep infinity
-        command:
-        - /bin/sh
-        - -c
         image: alpine:3.18
         name: alpine
+        command: ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"]
         resources:
           limits:
             memory: 128Mi
