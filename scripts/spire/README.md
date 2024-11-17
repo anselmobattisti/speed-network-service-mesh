@@ -23,6 +23,16 @@ To build the federation the keys from each cluster must be copied to the other.
 
 ## Debug
 
+Check server health
+
+```sh 
+kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster1 -- bin/spire-server healthcheck
+
+kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster2 -- bin/spire-server healthcheck
+
+kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster3 -- bin/spire-server healthcheck
+```
+
 Get the logs of the spire server on each cluster
 
 ```sh 
@@ -59,18 +69,14 @@ kubectl --context=kind-cluster2 exec spire-server-0 -n spire -- bin/spire-server
 kubectl --context=kind-cluster3 exec spire-server-0 -n spire -- bin/spire-server bundle list
 ```
 
-It list all the bundle in the server
-
-```sh
-kubectl exec spire-server-0 -n spire --context=kind-cluster1 -c spire-server -- bin/spire-server bundle list
-
-kubectl exec spire-server-0 -n spire --context=kind-cluster2 -c spire-server -- bin/spire-server bundle list
-
-kubectl exec spire-server-0 -n spire --context=kind-cluster3 -c spire-server -- bin/spire-server bundle list
-```
-
 Show the trust bundles, if executed in cluster3 it must present the data from cluster1 and cluster2
 
 ```sh
 kubectl exec spire-server-0 -n spire -c spire-server -- bin/spire-server bundle list  -format spiffe
+```
+
+List all the trusted domains in the spire server
+
+```sh
+kubectl logs spire-server-0 -n spire -c spire-server --context=kind-cluster2 | grep "Trust domain is now managed"
 ```
