@@ -1,5 +1,25 @@
 # Test
 
+## Final Objective 
+
+Creation of a NSM Composition https://networkservicemesh.io/docs/concepts/architecture/#composition
+
+I have 4 k8s cluster created using kind. 
+
+They are in the same docker network. 
+
+I exposed the services using metallb, each one having a subset of available ips.
+
+I want to create a composed application for only testing the connectivity.
+
+cluster1            cluster2               cluster3          cluster4
+ -> k8s pod running socat -> k8s pod running socat -> pode iperf server
+
+# Steps 
+
+a) Create the service in the Registry
+b) Create each pod and add the label to bind it with the created service
+
 ## Environment 
 
 The environment is composed of k8s clusters created using kind, the services are exposed via metallb loadbalance and the CodeDNS provide the interdomain name resolve FQN. Important, the url of a service is service_name.namespace.my.cluster(n).

@@ -1,0 +1,10 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- binding.yaml
+- sa.yaml
+- role.yaml
+- nsmgr-proxy.yaml
+- nsmgr-proxy-service.yaml

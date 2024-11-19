@@ -1,0 +1,29 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: nsm-system
+
+resources:
+# - https://github.com/kubernetes-sigs/about-api/clusterproperty/config/crd?ref=f9b81063dfa88c032a47789c7cd3357ba0c17f7d
+# - https://raw.githubusercontent.com/kubernetes-sigs/about-api/f9b81063dfa88c032a47789c7cd3357ba0c17f7d/clusterproperty/config/crd/bases/about.k8s.io_clusterproperties.yaml
+# - https://github.com/kubernetes-sigs/about-api/tree/master/clusterproperty/config/crd
+- cluster-property.yaml
+- nsm-system-namespace.yaml
+- ../../files/apps/cluster-info
+- ../../files/apps/nsmgr
+- ../../files/apps/forwarder-vpp
+- ../../files/apps/registry-memory
+- ../../files/apps/registry-proxy-dns
+- ../../files/apps/nsmgr-proxy
+- ../../files/apps/admission-webhook-k8s
+
+patches:
+  - path: patch-nsmgr-proxy.yaml
+  - path: patch-registry-proxy-dns.yaml
+  - path: patch-registry-memory.yaml
+  - path: patch-registry-service.yaml
+    target:
+      version: v1
+      kind: Service
+      name: registry

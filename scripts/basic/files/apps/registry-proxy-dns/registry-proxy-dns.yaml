@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry-proxy
+  labels:
+    app: registry-proxy
+spec:
+  selector:
+    matchLabels:
+      app: registry-proxy
+  template:
+    metadata:
+      labels:
+        app: registry-proxy
+        "spiffe.io/spiffe-id": "true"
+    spec:
+      containers:
+        - image: ghcr.io/networkservicemesh/ci/cmd-registry-proxy-dns:ae47091
+          env:
+            - name: SPIFFE_ENDPOINT_SOCKET
+              value: unix:///run/spire/sockets/agent.sock
+            - name: NSM_LISTEN_ON
+              value: tcp://:5005
+            - name: NSM_LOG_LEVEL
+              value: TRACE
+          imagePullPolicy: IfNotPresent
+          name: registry
+          ports:
+            - containerPort: 5005
+              hostPort: 5005
+          volumeMounts:
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              memory: 40Mi
+              cpu: 200m
+      volumes:
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/sockets
+            type: Directory
+        - name: nsm-socket
+          hostPath:
+            path: /var/lib/networkservicemesh
+            type: DirectoryOrCreate

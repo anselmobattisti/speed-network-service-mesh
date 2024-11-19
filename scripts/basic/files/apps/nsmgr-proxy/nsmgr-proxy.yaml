@@ -1,0 +1,86 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nsmgr-proxy
+  labels:
+    app: nsmgr-proxy
+spec:
+  selector:
+    matchLabels:
+      app: nsmgr-proxy
+  template:
+    metadata:
+      labels:
+        app: nsmgr-proxy
+        "spiffe.io/spiffe-id": "true"
+    spec:
+      serviceAccount: nsmgr-proxy-sa
+      containers:
+        - image: ghcr.io/networkservicemesh/ci/cmd-nsmgr-proxy:b642dab
+          imagePullPolicy: IfNotPresent
+          name: nsmgr-proxy
+          ports:
+            - containerPort: 5004
+              hostPort: 5004
+          env:
+            - name: SPIFFE_ENDPOINT_SOCKET
+              value: unix:///run/spire/sockets/agent.sock
+            - name: NSM_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NSM_LOG_LEVEL
+              value: TRACE
+            - name: NSM_REGISTRY_URL
+              value: "registry:5002"
+            - name: NSM_REGISTRY_PROXY_URL
+              value: "registry-proxy:5005"
+            - name: NSM_LISTEN_ON
+              value: tcp://:5004
+            - name: NSM_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NSM_MAP_IP_FILE_PATH
+              value: "/etc/mapip/config.yaml"
+          volumeMounts:
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+              readOnly: true
+            - name: mapip-volume
+              mountPath: /etc/mapip
+          resources:
+            requests:
+              cpu: 200m
+            limits:
+              memory: 100Mi
+              cpu: 400m
+        - image: ghcr.io/networkservicemesh/ci/cmd-map-ip-k8s:3ae2a34
+          imagePullPolicy: IfNotPresent
+          name: map-ip-k8s
+          env:
+            - name: NSM_OUTPUT_PATH
+              value: "/etc/mapip/config.yaml"
+            - name: NSM_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: mapip-volume
+              mountPath: /etc/mapip
+          resources:
+            limits:
+              memory: 25Mi
+              cpu: 50m
+      volumes:
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/sockets
+            type: Directory
+        - name: nsm-socket
+          hostPath:
+            path: /var/lib/networkservicemesh
+            type: DirectoryOrCreate
+        - name: mapip-volume
+          emptyDir: {}
