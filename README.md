@@ -104,3 +104,9 @@ iperf3 -c 10.244.2.14 -p 8080
 
 URL da instalação 
 https://github.com/networkservicemesh/deployments-k8s/tree/v1.14.0/examples/interdomain/two_cluster_configuration/basic
+
+## Requirement in the Host Machine
+
+* kind: Software to create a k8s cluster in Docker
+* Docker: container virtualization engine
+* kubectl: CLI to interact with a k8s cluster
