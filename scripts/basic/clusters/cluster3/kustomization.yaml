@@ -7,7 +7,6 @@ namespace: nsm-system
 resources:
 - nsm-system-namespace.yaml
 - ../../files/apps/registry-k8s
-- ../../files/apps/vl3-ipam
 
 patches:
   - path: patch-registry-k8s.yaml

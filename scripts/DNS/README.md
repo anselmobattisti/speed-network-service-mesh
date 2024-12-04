@@ -110,3 +110,5 @@ Address:	10.96.0.10#53
 Name:	nginx.default.my.cluster3
 Address: 172.19.0.123
 ```
+
+The test automaticaly remove the deployment of the nginx in cluster1 that is used to test the DNS configuration.

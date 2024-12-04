@@ -17,9 +17,9 @@ bootstrap_spiffe_federation() {
         return 1
     fi
 
-    echo "================================="
-    echo " Bootstrapping SPIFFE Federation"
-    echo "================================="
+    echo   "================================="
+    printc " Bootstrapping SPIFFE Federation" "orange"
+    echo   "================================="
 
     # Step 1: Retrieve trust bundles for each cluster
     declare -A bundles
@@ -55,12 +55,12 @@ bootstrap_spiffe_federation() {
                 echo "Setting bundle for $target_cluster in $current_cluster..."
                 echo "${bundles[$target_cluster]}" | \
                     kubectl --context="$current_context" exec -i spire-server-0 -n spire -c spire-server -- \
-                    bin/spire-server bundle set -format spiffe -id "spiffe://${target_cluster}"
+                    bin/spire-server bundle set -format spiffe -id "spiffe://nsm.${target_cluster}"
             fi
         done
     done
 
-    kubectl rollout restart statefulset spire-server -n spire --context "$current_context"
+    # kubectl rollout restart statefulset spire-server -n spire --context "$current_context"
 
     echo "==========================="
     echo " SPIFFE Federation Bootstrap Completed"
@@ -279,7 +279,7 @@ base_files() {
   
   ./delete.sh
 
-  echo "Removing the previously configured folder"
+  printc "Removing the previously configured folder" "orange"
   rm -Rf ./clusters
   mkdir ./clusters
 
@@ -293,36 +293,79 @@ base_files() {
   echo "Base files copied"  
 }
 
-# copy the base files for the spire each cluster
-base_files
+install(){
+    # copy the base files for the spire each cluster
+    base_files
 
-# Apply DNS configuration for each cluster
-for i in "${!clusters[@]}"; do
-  
-  cluster="${clusters[$i]}"
-  current_context="${clusters_context[$i]}"
-  current_ip="${clusters_ip[$i]}"
+    # Apply DNS configuration for each cluster
+    for i in "${!clusters[@]}"; do
+    
+        cluster="${clusters[$i]}"
+        current_context="${clusters_context[$i]}"
+        current_ip="${clusters_ip[$i]}"
 
-  echo "=================================="
-  echo " Configuring Cluster ${cluster}"
-  echo "=================================="
-  
-  create_files $cluster
+        echo "=================================="
+        echo " Configuring Cluster ${cluster}"
+        echo "=================================="
+        
+        create_files $cluster
 
-  kubectl --context=$current_context apply -k clusters/$cluster/
+        kubectl --context=$current_context apply -k clusters/$cluster/    
 
-  kubectl --context=$current_context wait -n spire --timeout=3m --for=condition=ready pod -l app=spire-server
+        # Update the spire server svc to listen in the port 8443
+        echo "Add port 8443 to the spire-server service"
+        kubectl --context=$current_context apply -f ./clusters/base/server-statefulset-port-update.yaml    
 
-  kubectl --context=$current_context wait -n spire --timeout=1m --for=condition=ready pod -l app=spire-agent
+        kubectl --context=$current_context wait -n spire --timeout=3m --for=condition=ready pod -l app=spire-server
 
-  kubectl --context=$current_context apply -f ./clusters/$cluster/clusterspiffeid-template.yaml
+        kubectl --context=$current_context wait -n spire --timeout=1m --for=condition=ready pod -l app=spire-agent
 
-  kubectl --context=$current_context apply -f ./clusters/base/clusterspiffeid-webhook-template.yaml    
+        kubectl --context=$current_context apply -f ./clusters/$cluster/clusterspiffeid-template.yaml
 
-  # Update the spire server svc to listen in the port 8443
-  echo "Add port 8443 to the spire-server service"
-  kubectl --context=$current_context apply -f ./clusters/base/server-statefulset-port-update.yaml
+        kubectl --context=$current_context apply -f ./clusters/base/clusterspiffeid-webhook-template.yaml    
+
+    done
+}
+
+# Menu
+show_menu() {
+    echo "==============================="
+    echo "           SPIRE MENU          "
+    echo "==============================="
+    echo "1. Install SPIRE in Clusters"
+    echo "2. Bootstrap SPIFFE Federation"
+    echo "3. Delete SPIRE in Clusters"
+    echo "4. Exit"
+    echo "==============================="
+    echo -n "Enter your choice: "
+}
+
+# Main menu loop
+while true; do
+    show_menu
+    read -r choice
+    case $choice in
+        1)
+            echo "Running Install SPIRE..."
+            install
+            bootstrap_spiffe_federation
+            ;;
+        2)
+            echo "Bootstrapping SPIFFE Federation..."
+            bootstrap_spiffe_federation
+            ;;
+        3)
+            source ./delete.sh
+            exit 0
+            ;;
+        4)
+            echo "Exiting..."
+            exit 0
+            ;;
+        *)
+            echo "Invalid choice. Please try again."
+            ;;
+    esac
+    echo "Press Enter to continue..."
+    read -r
 done
-
-# setup the spiffe federation coping the bundles for the other servers
-bootstrap_spiffe_federation 

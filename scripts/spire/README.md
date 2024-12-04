@@ -80,3 +80,86 @@ List all the trusted domains in the spire server
 ```sh
 kubectl logs spire-server-0 -n spire -c spire-server --context=kind-cluster2 | grep "Trust domain is now managed"
 ```
+
+## Tutorial about SPIRE
+
+https://developer.hpe.com/blog/federating-spire-on-hpe-greenlake-for-private-cloud-enterprise/
+
+a porta 8443 tem que estara associada com o serviço spire-server-bundle-endpoint
+
+
+## Debug SPIRE
+
+### Listar os bundles em um cluster
+
+```shell
+kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster3 -- bin/spire-server logger set -level=trace
+```
+
+### Attach terminal
+
+The spire server has no terminal access
+
+```shell
+kubectl debug -n spire -it spire-server-0 --target=spire-server --image=alpine
+```
+
+### Set The Error Log 
+
+```shell
+kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster3 -- bin/spire-server logger set -level=trace
+```
+
+### Config Map
+
+Show the configmap of the server.conf applies in the spire server.
+
+```shell
+kubectl describe configmaps spire-server -n spire
+```
+
+### Config Map
+
+Get the logs from the spire controller manager
+
+```shell
+kubectl logs spire-server-0 -n spire -c spire-controller-manager
+```
+
+### Logs
+
+Get the logs from the spire controller manager
+
+```shell
+kubectl logs spire-server-0 -n spire -c spire-server --context=kind-cluster3
+```
+
+### Manual Creation of a Federation
+
+```shell
+kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster3 -- bin/spire-server federation create \
+    -trustDomain nsm.cluster4 \
+    -bundleEndpointURL https://spire-server.spire.my.cluster1:8443 \
+    -endpointSpiffeID spiffe://nsm.cluster1/spire/server \
+    -bundleEndpointProfile https_spiffe
+```
+
+### List all the entries
+
+```shell
+ kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster3 -- bin/spire-server entry show
+```
+
+### Show the bundles
+
+```shell
+ kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster3 -- bin/spire-server bundle list
+```
+
+### Set Bundles
+
+```shell
+-- set the bundles
+echo $bundle2 | kubectl --context=kind-cluster1 exec -i spire-server-0 -n spire -c spire-server -- bin/spire-server bundle set -format spiffe -id "spiffe://nsm.cluster2"
+echo $bundle3 | kubectl --context=kind-cluster1 exec -i spire-server-0 -n spire -c spire-server -- bin/spire-server bundle set -format spiffe -id "spiffe://nsm.cluster3"
+```

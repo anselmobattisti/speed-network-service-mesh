@@ -15,3 +15,9 @@ The install command also delete the previous cluster if exists.
 ## Requirements
 
 Tested in kind version 0.25.0
+
+## Change Kunctl Context
+
+```shell
+kubectl config use-context kind-cluster3
+```

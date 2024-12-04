@@ -110,3 +110,21 @@ https://github.com/networkservicemesh/deployments-k8s/tree/v1.14.0/examples/inte
 * kind: Software to create a k8s cluster in Docker
 * Docker: container virtualization engine
 * kubectl: CLI to interact with a k8s cluster
+
+# Links 
+
+https://events19.linuxfoundation.org/wp-content/uploads/2017/12/Network-Service-Mesh-An-Attempt-to-Reimagine-NFV-in-a-Cloud-Native-Fashion-Kyle-Mestery-Cisco-Frederick-Kautz-Red-Hat.pdf
+
+
+Artigo que usou NSM e SFC
+https://link.springer.com/chapter/10.1007/978-3-031-10419-0_8
+
+Documentos internos sobre NSM 
+
+https://docs.google.com/document/d/1C9NKjo0PWNWypROEO9-Y6haw5h9Xmurvl14SXpciz2Y/edit?tab=t.0
+
+Video bem explicativo sobre NSM
+https://www.youtube.com/watch?v=ffMAjwAJ2oc and the post in the blog https://codilime.com/blog/is-network-service-mesh-a-service-mesh/
+
+Achei um demo bem legal 
+https://www.youtube.com/watch?v=sLKQSK84DxY
