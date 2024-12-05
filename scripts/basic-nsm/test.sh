@@ -12,6 +12,8 @@ source ../functions.sh
 
 cluster_definition_load
 
+NAMESPACE="nsm-system"
+
 main() {
     # Worker clusters
     # Worker clusters
@@ -24,8 +26,7 @@ main() {
         echo " Test Process nsmgr-proxy in ${cluster}"
         echo "====================================="
 
-        # Define the Kubernetes context and the namespace
-        NAMESPACE="nsm-system"
+        # Define the Kubernetes context and the namespace        
         SERVICE_NAME="nsmgr-proxy"
 
         # Wait for the IP to be assigned
@@ -57,7 +58,6 @@ main() {
     echo "========================================================="
 
     # Wait for the IP to be assigned
-    NAMESPACE="nsm-system"
     SERVICE_NAME="registry"
     while true; do
         echo "Waiting for external IP for service $SERVICE_NAME in context $registry_cluster..."
@@ -71,6 +71,31 @@ main() {
         fi
 
         sleep 5 # Wait for 5 seconds before retrying
+    done
+
+    # List ALL pods
+    for ((i = 0; i < ${#clusters[@]}; i++)); do   
+   
+        cluster="${clusters[$i]}"
+        current_context="${clusters_context[$i]}"    
+    
+        echo "========================================================================="
+        echo " List all pods in the cluster ${cluster}" namespace ${NAMESPACE="nsm-system"}
+        echo "========================================================================="
+
+        # List all pods in the namespace
+        pod_status=$(kubectl get pods -n $NAMESPACE --context=$current_context --no-headers)
+
+        echo "$pod_status"
+
+        # Check for pods that are not running
+        if echo "$pod_status" | grep -v -E "Running|Completed" > /dev/null; then
+            echo "ERROR: One or more pods are not in 'Running' or 'Completed' state in the cluster ${cluster} (namespace: $NAMESPACE)"
+            echo "Details of problematic pods:"
+            echo "$pod_status" | grep -v -E "Running|Completed"
+        else
+            echo "All pods are running or completed in the cluster ${cluster} (namespace: $NAMESPACE)"
+        fi
     done
 }
 

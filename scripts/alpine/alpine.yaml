@@ -1,8 +1,6 @@
-# debug.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   labels:
     app: debug
   name: debug
@@ -11,28 +9,21 @@ spec:
   selector:
     matchLabels:
       app: debug
-  strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: debug
     spec:
       containers:
-      - args:
-        - |-
-          apk add curl jq openssl bash bind-tools          
-          apk add coreutils
-          apk add iperf3
-          apk add tcpdump
-          apk add socat
-          apk add vim
-          sleep infinity
+      - name: alpine
         image: alpine:3.18
-        name: alpine
-        command: ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"]
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |
+          apk --no-cache add curl jq openssl bash bind-tools coreutils iperf3 tcpdump socat vim && sleep infinity
         resources:
           limits:
             memory: 128Mi
             cpu: 100m
-status: {}

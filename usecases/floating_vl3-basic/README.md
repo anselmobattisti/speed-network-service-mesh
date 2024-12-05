@@ -7,6 +7,12 @@ This example show how can be configured NSM over interdomain via vL3 network.
 
 ## Cluster 3
 
+Before the execution, in the spire server there is one entry, which is the registry-k8s
+
+```shell
+kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster3 -- bin/spire-server entry show
+```
+
 Install the components in the cluster3
 
 ```shell
@@ -35,7 +41,7 @@ To see the details of the NS
 kubectl describe NetworkService -n ns-floating-vl3-basic floating-vl3-basic --context=kind-cluster3
 ```
 
-The service to execute the IPAM also must be in execution and it must have an external IP. For some reason the example file that update the IPAM Service from ClusterIP to Loadbalancer was not working, so i need to update the file that start the ipam service to begin with loadbalance (app/vl3-ipam/vl3-ipam-service.yaml)
+The service that executes the IPAM component must have an EXTERNAL-IP. For some reason the example file that update the IPAM Service from ClusterIP to Loadbalancer was not working. Thus, I need to update the file that start the IPAM service to begin with loadbalance (app/vl3-ipam/vl3-ipam-service.yaml) instead ClusterIP that was configured previously.
 
 ```shell
 kubectl get Service -n ns-floating-vl3-basic --context=kind-cluster3
@@ -116,7 +122,7 @@ kubectl get pods -n ns-floating-vl3-basic --context=kind-cluster2
 kubectl logs alpine -n ns-floating-vl3-basic --context=kind-cluster1 -c cmd-nsc-init  --context=kind-cluster2
 ```
 
-Analise the logs of the pod nse-vl3-vpp-1
+Analise the logs of the pod nse-vl3-vpp-2
 
 ```shell
 kubectl logs nse-vl3-vpp-2 -n ns-floating-vl3-basic --context=kind-cluster2
