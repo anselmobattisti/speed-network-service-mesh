@@ -8,14 +8,11 @@ echo "==========================="
 # Enable error handling
 set -e
 
-source ../functions.sh
-
-cluster_definition_load
+source ../clusters.sh
 
 NAMESPACE="nsm-system"
 
 main() {
-    # Worker clusters
     # Worker clusters
     for ((i = 0; i < ${#clusters[@]} - 1; i++)); do   
    

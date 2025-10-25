@@ -12,9 +12,7 @@ echo "============================="
 # Enable error handling
 set -e
 
-source ../functions.sh
-
-cluster_definition_load
+source ../clusters.sh
 
 get_federated_with_domain() {
     # Check if the required argument is provided

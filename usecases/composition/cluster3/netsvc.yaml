@@ -1,0 +1,16 @@
+---
+apiVersion: networkservicemesh.io/v1
+kind: NetworkService
+metadata:
+  name: interdomain-nse-composition
+spec:
+  payload: ETHERNET
+  matches:
+    - source_selector:
+        app: passthrough-1
+      routes:
+        - destination_selector:
+            app: passthrough-2
+    - routes:
+        - destination_selector:
+            app: passthrough-3

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: alpine
-        image: alpine:3.18
+        image: alpine:3.22,2
         command:
         - /bin/sh
         - -c

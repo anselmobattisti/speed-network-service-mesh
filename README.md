@@ -128,3 +128,8 @@ https://www.youtube.com/watch?v=ffMAjwAJ2oc and the post in the blog https://cod
 
 Achei um demo bem legal 
 https://www.youtube.com/watch?v=sLKQSK84DxY
+
+Como construir uma CNF
+https://www.youtube.com/watch?v=UcODeI-HVZE
+
+LFN Webinar: Building CNFs with FD.io VPP and NSM + VPP traceability in cloud-native deployments
