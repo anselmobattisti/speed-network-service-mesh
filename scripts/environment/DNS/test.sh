@@ -26,7 +26,7 @@ for cluster in "${clusters_context[@]}"; do
     echo "=============================="
 
     # Run nslookup and capture the output
-    IP=$(kubectl --context=$cluster run -it --rm dns-test --image=busybox:1.28 --restart=Never -- /bin/sh -c "nslookup nginxtest.default.my.cluster1 | grep Address | tail -n 1 | awk '{print \$3}'")
+    IP=$(kubectl --context=$cluster run -it --rm dns-test --image=busybox:1.37.0 --restart=Never -- /bin/sh -c "nslookup nginxtest.default.my.cluster1 | grep Address | tail -n 1 | awk '{print \$3}'")
     
     # Store the IP for comparison
     IP_STORAGE+=("$IP")

@@ -37,7 +37,7 @@ for cluster in "${clusters_context[@]}"; do
 
     if [[ ! -z $METALLB_IP_RANGE ]]; then
 
-    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.2/config/manifests/metallb-native.yaml
 
     echo "Waiting for the MetalLB controller pod to become Ready..."
 

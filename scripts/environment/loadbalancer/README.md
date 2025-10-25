@@ -29,6 +29,8 @@ Execute the command to list the ips that can be used in the cluster.
 
 ```shell
 kubectl get ipaddresspool -n metallb-system --context=kind-cluster1
+kubectl get ipaddresspool -n metallb-system --context=kind-cluster2
+kubectl get ipaddresspool -n metallb-system --context=kind-cluster3
 ```
 
 Must list all the IPs in the cluster pool, including the ips in use.
