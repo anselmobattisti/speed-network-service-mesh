@@ -4,9 +4,10 @@ echo "================"
 echo " DELETING SPIRE "
 echo "================"
 
-source ../functions.sh
+# source ../functions.sh
+# cluster_definition_load
 
-cluster_definition_load
+source ../../clusters.sh
 
 # Function to check if a resource exists
 check_and_delete() {

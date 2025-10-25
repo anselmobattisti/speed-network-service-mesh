@@ -15,9 +15,9 @@ bootstrap_spiffe_federation() {
         return 1
     fi
 
-    echo   "================================="
-    printc " Bootstrapping SPIFFE Federation" "orange"
-    echo   "================================="
+    echo   "==============================="
+    echo " Bootstrapping SPIFFE Federation"
+    echo   "==============================="
 
     # Step 1: Retrieve trust bundles for each cluster
     declare -A bundles
@@ -277,7 +277,7 @@ base_files() {
   
   ./delete.sh
 
-  printc "Removing the previously configured folder" "orange"
+  echo "Removing the previously configured folder"
   rm -Rf ./clusters
   mkdir ./clusters
 
@@ -311,11 +311,13 @@ install(){
         kubectl --context=$current_context apply -k clusters/$cluster/    
 
         # Update the spire server svc to listen in the port 8443
-        echo "Add port 8443 to the spire-server service"
-        kubectl --context=$current_context apply -f ./clusters/base/server-statefulset-port-update.yaml    
+        # echo "Add port 8443 to the spire-server service"
+        kubectl --context=$current_context apply -f ./clusters/base/server-statefulset-port-update.yaml
 
+        echo "Waiting for spire-server to be ready"
         kubectl --context=$current_context wait -n spire --timeout=3m --for=condition=ready pod -l app=spire-server
 
+        echo "Waiting for spire-agent to be ready"
         kubectl --context=$current_context wait -n spire --timeout=1m --for=condition=ready pod -l app=spire-agent
 
         kubectl --context=$current_context apply -f ./clusters/$cluster/clusterspiffeid-template.yaml
@@ -346,7 +348,7 @@ while true; do
         1)
             echo "Running Install SPIRE..."
             install
-            bootstrap_spiffe_federation
+            # bootstrap_spiffe_federation
             ;;
         2)
             echo "Bootstrapping SPIFFE Federation..."

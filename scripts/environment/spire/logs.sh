@@ -6,9 +6,7 @@ echo "============"
 echo " LOGS SPIRE "
 echo "============"
 
-source ../functions.sh
-
-cluster_definition_load
+source ../../clusters.sh
 
 # Show spire logs in all the clusters
 for i in "${!clusters[@]}"; do

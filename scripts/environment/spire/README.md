@@ -12,7 +12,7 @@ The source files are hosted inside the "files" folder. The files/base folder is 
 
 After creating the files for each cluster and executing apply the yaml files in each cluster, is necessary to create the federation.
 
-To build the federation the keys from each cluster must be copied to the other.
+To build the federation the keys from each cluster must be copied to the other clusters.
 
 ## Folder Structure 
 
@@ -42,8 +42,6 @@ kubectl logs spire-server-0 -n spire --context=kind-cluster3
 ```
 
 The service spire-server must listern in the port 8443
-
-kubectl describe svc spire-server -n spire --context=kind-cluster3
 
 ```sh 
 kubectl describe svc spire-server -n spire --context=kind-cluster1
@@ -78,7 +76,11 @@ kubectl exec spire-server-0 -n spire -c spire-server -- bin/spire-server bundle 
 List all the trusted domains in the spire server
 
 ```sh
+kubectl logs spire-server-0 -n spire -c spire-server --context=kind-cluster1 | grep "Trust domain is now managed"
+
 kubectl logs spire-server-0 -n spire -c spire-server --context=kind-cluster2 | grep "Trust domain is now managed"
+
+kubectl logs spire-server-0 -n spire -c spire-server --context=kind-cluster3 | grep "Trust domain is now managed"
 ```
 
 ## Tutorial about SPIRE
@@ -162,4 +164,14 @@ kubectl exec spire-server-0 -n spire -c spire-server --context=kind-cluster3 -- 
 -- set the bundles
 echo $bundle2 | kubectl --context=kind-cluster1 exec -i spire-server-0 -n spire -c spire-server -- bin/spire-server bundle set -format spiffe -id "spiffe://nsm.cluster2"
 echo $bundle3 | kubectl --context=kind-cluster1 exec -i spire-server-0 -n spire -c spire-server -- bin/spire-server bundle set -format spiffe -id "spiffe://nsm.cluster3"
+```
+
+### Detect Pod With Problema
+
+```shell
+kubectl describe pod spire-server-0 -n spire --context=kind-cluster1
+
+kubectl get pod spire-server-0 -n spire --context=kind-cluster1 -o jsonpath='{.status.containerStatuses[*].state}'
+
+
 ```
