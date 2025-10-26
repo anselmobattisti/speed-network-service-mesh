@@ -18,22 +18,19 @@ install(){
 }
 
 test(){
-    echo "Starting test process..."
+    source ./test.sh
+}
 
-    echo "Fetching IP address from cluster2..."
-
-    ipAddr2=$(kubectl --context=kind-cluster2 exec -n ns-floating-vl3-basic pods/alpine -- ifconfig nsm-1)
-    ipAddr2=$(echo $ipAddr2 | grep -Eo 'inet addr:[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'| cut -c 11-)
-
-    echo "Pinging cluster2 IP ($ipAddr2) from cluster1..."
-    kubectl --kubeconfig=kind-cluster1 exec pods/alpine -n ns-floating-vl3-basic -- ping -c 4 $ipAddr2
+testiperf(){
+    source ./test-iperf.sh
 }
 
 menu() {
     while true; do
         echo "========== Menu =========="
         echo "1. Install"
-        echo "2. Test"
+        echo "2. Test Ping"
+        echo "2. Test iPerf"
         echo "3. Exit"
         echo "=========================="
         read -rp "Select an option [1-3]: " choice
@@ -46,6 +43,9 @@ menu() {
                 test
                 ;;
             3)
+                testiperf
+                ;;                
+            4)
                 echo "Exiting script. Goodbye!"
                 exit 0
                 ;;

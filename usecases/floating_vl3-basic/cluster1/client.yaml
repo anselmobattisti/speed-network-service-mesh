@@ -14,4 +14,9 @@ spec:
     imagePullPolicy: IfNotPresent
     # simple `sleep` command would work
     # but we need `trap` to be able to delete pods quckly
-    command: ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        apk add --no-cache iperf3 && \
+        trap : TERM INT; sleep infinity & wait
