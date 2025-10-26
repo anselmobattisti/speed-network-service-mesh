@@ -12,6 +12,10 @@ In the other clusters will be installed the basic services.
 * files/cluster-worker: The template file for the worker clusters
 * files/cluster-registry: The template file for the registry clusters
 
+### Apps
+
+To add a new app in the cluster, you need to add the app in the files/apps folder and then add the app in the files/cluster-worker/kustomization.yaml or cluster-registry/kustomization.yaml file including the new app. 
+
 # The Process
 
 For each cluster in the configured file we create a folder inside the foder clusters. The last cluster is the floating registry, it will run the k8s registry. The other clusters are the worker clusters.

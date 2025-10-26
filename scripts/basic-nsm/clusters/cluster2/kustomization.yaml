@@ -17,6 +17,7 @@ resources:
 - ../../files/apps/registry-proxy-dns
 - ../../files/apps/nsmgr-proxy
 - ../../files/apps/admission-webhook-k8s
+- ../../files/apps/nse-firewall-vpp
 
 patches:
   - path: patch-nsmgr-proxy.yaml
