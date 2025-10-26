@@ -1,6 +1,16 @@
 #!/bin/bash
 
 install(){
+
+    echo "Installing floating-vl3-basic usecase..."
+    
+    echo "Install APP vl3-ipam..."
+    kubectl --context=kind-cluster1 apply -k ./apps/vl3-ipam
+    kubectl --context=kind-cluster2 apply -k ./apps/vl3-ipam
+    kubectl --context=kind-cluster3 apply -k ./apps/vl3-ipam
+
+    return
+    
     kubectl --context=kind-cluster3 apply -k ./cluster3
 
     kubectl --context=kind-cluster1 apply -k ./cluster1
@@ -53,3 +63,14 @@ menu() {
 
 # Start the menu
 menu
+
+
+# Manual creation
+kubectl --context=kind-cluster3 apply -k https://github.com/networkservicemesh/deployments-k8s/examples/interdomain/usecases/floating_vl3-basic/cluster3?ref=074947f2e902b17de98c9410c96cc09d3208e15a
+kubectl --context=kind-cluster1 apply -k https://github.com/networkservicemesh/deployments-k8s/examples/interdomain/usecases/floating_vl3-basic/cluster1?ref=074947f2e902b17de98c9410c96cc09d3208e15a
+kubectl --context=kind-cluster2 apply -k https://github.com/networkservicemesh/deployments-k8s/examples/interdomain/usecases/floating_vl3-basic/cluster2?ref=074947f2e902b17de98c9410c96cc09d3208e15a
+
+
+
+
+kubectl --context=kind-cluster1 wait --for=condition=ready --timeout=1m pod -l app=alpine -n ns-floating-vl3-basic

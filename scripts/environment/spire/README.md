@@ -1,8 +1,6 @@
 # Spire
 
-Is an implementation of SPIFE. It enable te secure comunication between pods. In prticular pods in different clusters.
-
-It is necessary to install and configure in each cluster the spire.
+Is an implementation of SPIFE. It enable te secure comunication between pods. In prticular pods in different clusters. It is necessary to install the SPIFE in each cluster and create the federation between them.
 
 ## Install Script
 

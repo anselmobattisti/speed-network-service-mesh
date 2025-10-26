@@ -84,7 +84,7 @@ main() {
         pod_status=$(kubectl get pods -n $NAMESPACE --context=$current_context --no-headers)
 
         echo "$pod_status"
-
+        
         # Check for pods that are not running
         if echo "$pod_status" | grep -v -E "Running|Completed" > /dev/null; then
             echo "ERROR: One or more pods are not in 'Running' or 'Completed' state in the cluster ${cluster} (namespace: $NAMESPACE)"

@@ -44,6 +44,6 @@ Enable the execution of workloads in a secure way in different clusters. We are 
 
 There is no test implemented yet to check if the spire is working correctly.
 
-## NSM
+## NSM Basic
 
 To install the NSM components inside each cluster to execute the use-cases run the installation inside the script/basic folder.

@@ -109,8 +109,14 @@ create_files_registry(){
     "{federated_with}" \
     "$federated_with"
     
+    update_patch_file \
+    "files/cluster-registry/patch-vl3-ipam.yaml" \
+    "clusters/${NEW_CLUSTER}/patch-vl3-ipam.yaml" \
+    "{federated_with}" \
+    "$federated_with"
+
     local OUTPUT_DIR="clusters/${NEW_CLUSTER}"
-    local files_to_copy=("kustomization.yaml" "nsm-system-namespace.yaml" "patch-registry-service.yaml")
+    local files_to_copy=("kustomization.yaml" "nsm-system-namespace.yaml" "patch-registry-service.yaml" "patch-ipam-service.yaml")
 
     mkdir -p "$OUTPUT_DIR"
 
