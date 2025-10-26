@@ -147,3 +147,11 @@ kubectl exec -it alpine -n ns-floating-vl3-basic --context=kind-cluster1 -- sh
 # get the ip 
 ping 172.16.0.3
 ```
+
+# Debug
+
+Describe the Network Service created
+
+```shell
+kubectl describe networkservice floating-vl3-basic  -n ns-floating-vl3-basic --context=kind-cluster3
+``` 
